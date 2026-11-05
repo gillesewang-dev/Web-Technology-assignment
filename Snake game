@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snake Game</title>
+
+    <style>
+        body {
+            background: #101820;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+        }
+
+        h1 {
+            color: #00ff66;
+            margin-top: 25px;
+        }
+
+        .game {
+            background: #1c2933;
+            width: 90%;
+            max-width: 450px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        canvas {
+            background: black;
+            border: 3px solid #00ff66;
+            width: 100%;
+            max-width: 400px;
+            display: block;
+            margin: auto;
+        }
+
+        #score {
+            color: #00ff66;
+            font-size: 22px;
+        }
+
+        button {
+            background: #00cc55;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #009944;
+        }
+
+        .controls {
+            margin-top: 15px;
+        }
+
+        .controls button {
+            width: 55px;
+            height: 45px;
+            font-size: 20px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="game">
+
+        <h1>EWANG GILLES SNAKE GAME</h1>
+
+        <p>Eat the food and grow your snake!</p>
+
+        <h3>Score: <span id="score">0</span></h3>
+
+        <canvas id="board" width="400" height="400"></canvas>
+
+        <p id="message">Game Started! Use the arrow keys.</p>
+
+        <button onclick="startGame()">Start / Restart</button>
+
+        <div class="controls">
+
+            <div>
+                <button onclick="changeDirection('UP')">↑</button>
+            </div>
+
+            <div>
+                <button onclick="changeDirection('LEFT')">←</button>
+
+                <button onclick="changeDirection('DOWN')">↓</button>
+
+                <button onclick="changeDirection('RIGHT')">→</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const canvas = document.getElementById("board");
+        const ctx = canvas.getContext("2d");
+
+        let snake;
+        let food;
+        let score;
+        let direction;
+        let game;
+        let running = false;
+
+        const size = 10;
+
+        
+        function startGame() {
+
+            clearInterval(game);
+
+            snake = [
+                {x: 200, y: 200},
+                {x: 180, y: 200},
+                {x: 160, y: 200}
+            ];
+
+            direction = "RIGHT";
+            score = 0;
+
+            document.getElementById("score").innerHTML = score;
+
+            document.getElementById("message").innerHTML =
+            "Game Started! Use the arrow keys.";
+
+            running = true;
+
+            createFood();
+            drawGame();
+
+            game = setInterval(moveSnake, 120);
+        }
+
+        
+        function drawGame() {
+
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, 400, 400);
+
+            
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, size, size);
+
+            
+            snake.forEach(function(part, index) {
+
+                if (index === 0) {
+                    ctx.fillStyle = "#00ff66";
+                } else {
+                    ctx.fillStyle = "#009944";
+                }
+
+                ctx.fillRect(part.x, part.y, size, size);
+
+            });
+
+        }
+
+        
+        function createFood() {
+
+            food = {
+                x: Math.floor(Math.random() * 20) * size,
+                y: Math.floor(Math.random() * 20) * size
+            };
+
+            if (snake.some(part =>
+                part.x === food.x && part.y === food.y)) {
+
+                createFood();
+            }
+
+        }
+
+        
+        function moveSnake() {
+
+            let head = {
+                x: snake[0].x,
+                y: snake[0].y
+            };
+
+            if (direction === "UP") head.y -= size;
+
+            if (direction === "DOWN") head.y += size;
+
+            if (direction === "LEFT") head.x -= size;
+
+            if (direction === "RIGHT") head.x += size;
+
+            let ateFood = head.x === food.x && head.y === food.y;
+
+           
+            if (
+                head.x < 0 || head.x >= 400 ||
+                head.y < 0 || head.y >= 400
+            ) {
+                endGame();
+                return;
+            }
+
+            
+            let body = ateFood ? snake : snake.slice(0, -1);
+
+            if (body.some(part =>
+                part.x === head.x && part.y === head.y)) {
+
+                endGame();
+                return;
+            }
+
+            snake.unshift(head);
+
+            if (ateFood) {
+
+                score += 10;
+
+                document.getElementById("score").innerHTML = score;
+
+                createFood();
+
+            } else {
+
+                snake.pop();
+
+            }
+
+            drawGame();
+
+        }
+
+       
+        function changeDirection(newDirection) {
+
+            if (!running) return;
+
+            if (newDirection === "UP" && direction !== "DOWN") {
+                direction = "UP";
+            }
+
+            else if (newDirection === "DOWN" && direction !== "UP") {
+                direction = "DOWN";
+            }
+
+            else if (newDirection === "LEFT" && direction !== "RIGHT") {
+                direction = "LEFT";
+            }
+
+            else if (newDirection === "RIGHT" && direction !== "LEFT") {
+                direction = "RIGHT";
+            }
+
+        }
+
+        
+        document.addEventListener("keydown", function(event) {
+
+            const keys = {
+                ArrowUp: "UP",
+                ArrowDown: "DOWN",
+                ArrowLeft: "LEFT",
+                ArrowRight: "RIGHT"
+            };
+
+            if (keys[event.key]) {
+
+                event.preventDefault();
+
+                changeDirection(keys[event.key]);
+
+            }
+
+        });
+
+        
+        function endGame() {
+
+            clearInterval(game);
+
+            running = false;
+
+            document.getElementById("message").innerHTML =
+            "GAME OVER! Your score: " + score;
+
+        }
+
+        
+        startGame();
+
+    </script>
+
+</body>
+</html>
