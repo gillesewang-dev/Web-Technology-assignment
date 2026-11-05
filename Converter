@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grams to Kilograms Converter</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background-color: lightblue;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .container {
+            background-color: white;
+            width: 300px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: darkblue;
+        }
+
+        input {
+            padding: 10px;
+            width: 90%;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background-color: blue;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: darkblue;
+        }
+
+        p {
+            color: rgba(23, 168, 23, 0.952);
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2> Convert Grams to Kilograms</h2>
+
+        <input type="number" id="grams" placeholder="Enter grams">
+
+        <br>
+
+        <button onclick="convert()">Convert</button>
+
+        <p id="result"></p>
+
+    </div>
+
+    <script>
+        function convert() {
+            let grams = document.getElementById("grams").value;
+
+            let kilograms = grams / 1000;
+
+            document.getElementById("result").innerHTML =
+                kilograms + " Kilograms";
+        }
+    </script>
+
+</body>
+</html>
